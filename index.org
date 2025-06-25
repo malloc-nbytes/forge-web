@@ -1,0 +1,683 @@
+#+TITLE: Forge (your system)
+#+AUTHOR: malloc-nbytes
+
+* About
+
+Forge is a package manager where you "forge" your own packages in the form of C source files.
+Every package that you want to install must have an associated C file that contains rules and functions on how to build, install, uninstall, etc.
+To help with this, a suite of functions and data structures are supplied as the forge API.
+
+* Compiling
+Forge requires sqlite3. You must either download and untar it yourself, or just run =./bootstrap.sh=.
+Once this is done, run the following:
+
+#+begin_src bash
+autoreconf --install
+./configure --prefix=<prefix> --libdir=<dir>
+make
+#+end_src
+
+- Where =<prefix>= is your preferred installation prefix for the binary i.e., =/usr=, =/usr/local=.
+- Where =<libdir>= is your preferred installation location for the forge library i.e., =/usr/lib64=, =/usr/local/lib=.
+
+To install, run =sudo make install=. To uninstall, run =sudo make uninstall=.
+
+Forge installs files to these locations:
+- =<prefix>/forge= (binary)
+- =<prefix>/include/forge= (API Headers)
+- =<dir>/libforge.so= (forge library)
+- =/var/lib/forge/forge.db= (forge database)
+- =/var/cache/forge/sources/= (package sources)
+- =/usr/src/forge/modules/= (C package modules)
+- =/usr/lib/forge/modules= (compiled C package modules)
+
+* Getting Started
+The first time you run =forge= must be as root. This sets up the database. All subsequent calls do not need it
+(unless the action has an R tag, see =--help= for more information).
+
+To begin creating a new package, run =sudo forge new <pkg>=. This will open an editor to start definining the
+package rules and behavior. When you are finished, save and quit.
+
+When new packages are added, they must be built with =sudo forge --rebuild=. This will compile them and show
+any errors if needed.
+
+If there are errors, you can run =sudo forge edit <pkg>= to start editing it again.
+
+When all of your packages have been compiled, run =forge list= to see all available. You can then run the following to install them:
+=sudo forge install <pkg1> <pkg2>, ..., <pkgN>=. If you want to remove them, run =sudo forge uninstall <pkg1> <pkg2>, ..., <pkgN>=.
+If you want to update, do =sudo forge update <pkg1> <pkg2>, ..., <pkgN>= or have no arguments to update all of them.
+
+You will notice that there are packages already available when doing =forge list=. These were downloaded from the =forge-modules= repository.
+These cannot be edited, but can be updated by doing =forge --rebuild --sync= or =forge -rs=.
+
+** Walkthrough adding a new project
+
+Here is an example of how to add a package.
+
+I will add one of my packages called =AnimX=.
+
+Start the module with `forge new malloc-nbytes@AnimX`. This will generate the following:
+
+#+begin_src c
+  #include <forge/forge.h>
+
+  char *deps[] = {NULL}; // Must be NULL terminated
+
+  char *getname(void) { return "author@pkg_name"; }
+  char *getver(void) { return "1.0.0"; }
+  char *getdesc(void) { return "My Description"; }
+  char **getdeps(void) { return deps; }
+  char *download(void) {
+          return NULL; // should return the name of the final directory!
+  }
+  void build(void) {}
+  void install(void) {}
+  void uninstall(void) {}
+  int update(void) {
+          return 0; // return 1 if it needs a rebuild, 0 otherwise
+  }
+
+  FORGE_GLOBAL pkg package = {
+          .name = getname,
+          .ver = getver,
+          .desc = getdesc,
+          .deps = NULL,
+          .download = download,
+          .build = build,
+          .install = install,
+          .uninstall = uninstall,
+          .update = forge_pkg_git_update, // or define your own if not using git
+  };
+#+end_src
+
+Start filling out the missing fields. Also fill out how to build, install, uninstall, and (optionally) update.
+
+#+begin_src c
+    #include <forge/forge.h>
+
+    char *getname(void) { return "malloc-nbytes@AnimX"; }
+    char *getver(void) { return "1.0.0"; }
+    char *getdesc(void) { return "Animated Wallpapers for X"; }
+    char *download(void) {
+            // This download() function must return the name
+            // of the directory that gets downloaded. The result
+            // of git_clone() will return "AnimX". You could also do:
+            //  char *download(void) {
+            //    cmd("git clone https://www.github.com/malloc-nbytes/AnimX.git");
+            //    return "AnimX";
+            //  }
+            return git_clone("malloc-nbytes", "AnimX");
+    }
+    void build(void) {
+            cmd("autoreconf --install");
+            configure("./", NULL);
+            make(NULL);
+    }
+    void install(void) {
+            make("install");
+    }
+    void uninstall(void) {
+            make("uninstall");
+    }
+
+    FORGE_GLOBAL pkg package = {
+            .name = getname,
+            .ver = getver,
+            .desc = getdesc,
+            .deps = NULL,
+            .download = download,
+            .build = build,
+            .install = install,
+            .uninstall = uninstall,
+            .update = forge_pkg_git_update, // using default git update
+    };
+#+end_src
+
+I have decided to get rid of the =update()= function because, since this is a =git= repo, we can use
+the =forge_pkg_git_update()= provided by =forge/pkg.h= (included by =forge/forge.h=). If you were to
+create your own =update()= function, it must return =1= if it should get the new changes and rebuild,
+and =0= if otherwise.
+
+If you do not know any of the other functions that are being used i.e., =cmd()=, =make()=, =configure()=,
+run =forge apilist= and then =forge api <api_name>= to see documentation.
+
+Once you are done with your package, call =forge --rebuild # or forge -r= to rebuild all
+=C= modules. If there are any errors, they will be reported. If you need to fix anything,
+do =forge edit <pkgname>=.
+
+You should now see your new package available by running =forge list=. To get rid of it, run =forge drop <pkgname>=.
+This will create a backup and you can use =forge restore <pkgname>= to get it back.
+
+* Configuring =Forge=
+
+The configuration file is compiled with =forge=, meaning that if you need to edit it, you must also
+recompile to get the changes. You can edit it by doing =forge editconf=. Once your changes are done,
+do =forge updateforge= (this requires an internet connection).
+
+* API Reference
+
+# ENDDOCS
+** =forge/smap.h=
+#+begin_src c
+#ifndef SMAP_H_INCLUDED
+#define SMAP_H_INCLUDED
+
+#include <stddef.h>
+
+#define FORGE_SMAP_DEFAULT_TBL_CAPACITY 2048
+
+typedef struct __forge_smap_node {
+        char *k; // owns the string
+        void *v;
+        struct __forge_smap_node *n;
+} __forge_smap_node;
+
+typedef struct {
+        __forge_smap_node **tbl;
+        size_t len; // number of table entries
+        size_t cap; // capacity of table
+        size_t sz; // how many total nodes
+} forge_smap;
+
+/**
+ * Returns: a new string map
+ * Description: Create a new string map. Make sure to
+ *              call forge_smap_destroy() to free memory.
+ */
+forge_smap forge_smap_create(void);
+
+/**
+ * Parameter: map -> the map to insert to
+ * Parameter: k   -> the key
+ * Parameter: v   -> the value
+ * Description: Insert key `k` with value `v` into the map `map`.
+ */
+void forge_smap_insert(forge_smap *map, const char *k, void *v);
+
+/**
+ * Parameter: map -> the map to query
+ * Parameter: k   -> the key to check
+ * Returns: 1 if found, 0 if otherwise
+ * Description: See if the key `k` is inside of the map `map`.
+ */
+int forge_smap_contains(const forge_smap *map, const char *k);
+
+/**
+ * Parameter: map -> the map to get from
+ * Parameter: k   -> the key with the associated value
+ * Returns: the value of of the key `k`.
+ * Description: Get the value that the key `k` is associated with.
+ */
+void *forge_smap_get(const forge_smap *map, const char *k);
+
+/**
+ * Parameter: map -> the map to destroy
+ * Description: free()'s all memory that `map` allocates.
+ */
+void forge_smap_destroy(forge_smap *map);
+
+/**
+ * Parameter: map -> the map to iterate
+ * Returns: an array of keys (NULL terminated, NULL on failure)
+ * Description: Use this function to get all keys inside of
+ *              the map. It is guaranteed to be NULL terminated.
+ *              The result needs to be free()'d. The individual strings
+ *              do not need to be free()'d.
+ */
+char **smap_iter(const forge_smap *map);
+
+/**
+ * Paramter: map -> the map to get the size from
+ * Returns: the number of nodes in the map
+ * Description: Get the number of nodes stored inside of `map`.
+ */
+size_t forge_smap_size(const forge_smap *map);
+
+#endif // SMAP_H_INCLUDED
+
+
+#+end_src
+** =forge/forge.h=
+#+begin_src c
+#ifndef FORGE_H_INCLUDED
+#define FORGE_H_INCLUDED
+
+#include "forge/pkg.h"
+#include "forge/cmd.h"
+#include "forge/str.h"
+#include "forge/array.h"
+#include "forge/io.h"
+#include "forge/smap.h"
+#include "forge/conf.h"
+
+/**
+ * This file is solely used for including all
+ * API headers. Nothing else should be added here!
+ */
+
+#endif // FORGE_H_INCLUDED
+
+
+#+end_src
+** =forge/pkg.h=
+#+begin_src c
+#ifndef PKG_H_INCLUDED
+#define PKG_H_INCLUDED
+
+#include <stddef.h>
+
+#define FORGE_GLOBAL __attribute__((visibility("default")))
+
+typedef struct {
+        char *(*name)(void);
+        char *(*ver)(void);
+        char *(*desc)(void);
+        char **(*deps)(void);
+        char *(*download)(void);
+        void (*build)(void);
+        void (*install)(void);
+        void (*uninstall)(void);
+        int (*update)(void);
+} pkg;
+
+/**
+ * Returns: 1 if it should re-download the package,
+ *          or 0 if it shouldn't.
+ * Description: Performs the built-in way of doing
+ *              an update if the package uses git.
+ */
+int forge_pkg_git_update(void);
+
+#endif // PKG_H_INCLUDED
+
+
+#+end_src
+** =forge/io.h=
+#+begin_src c
+#ifndef IO_H_INCLUDED
+#define IO_H_INCLUDED
+
+/**
+ * Parameter: fp -> the filepath
+ * Returns: 1 if exists, 0 if not exists
+ * Description: Checks if the filepath `fp` exists.
+ */
+int forge_io_filepath_exists(const char *fp);
+
+/**
+ * Parameter: fp              -> the filepath
+ * Parameter: force_overwrite -> should we overwrite the file
+ *                               even if it exists?
+ * Description: Create a file at `fp`. If `force_overwrite` is
+ *              set to 1, it will truncate the file if it exists.
+ */
+void forge_io_create_file(const char *fp, int force_overwrite);
+
+/**
+ * Parameter: fp -> the filepath
+ * Returns: the bytes of the file
+ * Description: Read all bytes at the filepath `fp`.
+ */
+char *forge_io_read_file_to_cstr(const char *fp);
+
+/**
+ * Parameter: fp -> the filepath
+ * Returns: lines of the file, end of the array is guaranteed
+ *          to be NULL.
+ * Description: Read all lines at the filepath `fp`.
+ */
+char **forge_io_read_file_to_lines(const char *fp);
+
+/**
+ * Parameter: fp -> the filepath
+ * Returns: the absolute filepath of `fp`
+ * Description: Get the absolute path of `fp`.
+ */
+char *forge_io_resolve_absolute_path(const char *fp);
+
+/**
+ * Parameter: fp      -> the filepath
+ * Parameter: content -> the bytes to write to `fp`
+ * Returns: 1 on success, 0 on failure
+ * Description: Write `content` to `fp`.
+ */
+int forge_io_write_file(const char *fp, const char *content);
+
+#endif // IO_H_INCLUDED
+
+
+#+end_src
+** =forge/str.h=
+#+begin_src c
+#ifndef STR_H_INCLUDED
+#define STR_H_INCLUDED
+
+typedef struct {
+        char *data;
+        size_t len, cap;
+} forge_str;
+
+forge_str forge_str_create(void);
+forge_str forge_str_from(const char *s);
+void forge_str_clear(forge_str *fs);
+void forge_str_destroy(forge_str *fs);
+void forge_str_append(forge_str *fs, char c);
+void forge_str_concat(forge_str *fs, const char *s);
+int forge_str_eq(const forge_str *s0, const forge_str *s1);
+int forge_str_eq_cstr(const forge_str *s0, const char *s1);
+char *forge_str_to_cstr(const forge_str *fs);
+char *forge_str_contains_substr(
+        const forge_str *fs,
+        const char *substr,
+        int case_sensitive
+);
+#endif // STR_H_INCLUDED
+
+
+#+end_src
+** =forge/cmd.h=
+#+begin_src c
+#ifndef CMD_H_INCLUDED
+#define CMD_H_INCLUDED
+
+/**
+ * Parameter: fp -> the filepath to cd into
+ * Returns: 1 on success, 0 on failure
+ * Description: cd into the filepath `fp`.
+ */
+int cd(const char *fp);
+
+/**
+ * Parameter: fp -> the filepath to cd into
+ * Returns: 1 on success, 0 on failure
+ * Description: the same as cd(), but silent.
+ */
+int cd_silent(const char *fp);
+
+/**
+ * Parameter: cmd -> the command to execute
+ * Returns: 1 on success, 0 on failure
+ * Description: Issue a BASH command.
+ */
+int cmd(const char *cmd);
+
+/**
+ * Parameter: cmd      -> the command to execute
+ * Parameter: username -> the user to execute the command as
+ * Returns: 1 on success, 0 on failure
+ * Description: Issue a BASH command as a specific user.
+ *              This is useful if the program is being ran
+ *              through `sudo` and you need to create some
+ *              files not in /root/. It might be useful to
+ *              call get_prev_user() to get the user that
+ *              ran forge through sudo.
+ */
+int cmd_as(const char *cmd, const char *username);
+
+/**
+ * Parameter: cmd -> the command to execute
+ * Returns: the output of the command, or NULL on failure
+ * Description: Issue a BASH command and capture the output.
+ *              If the command fails or something goes wrong,
+ *              return return result will be NULL.
+ */
+char *cmdout(const char *cmd);
+
+/**
+ * Parameter: author -> the author of the program
+ * Parameter: name   -> the name of the program
+ * Returns: the name of the program
+ * Description: Do a `git clone https://www.github.com/<author>/<name>.git`.
+ *              This function returns the name of the command as it is
+ *              convenient for the download() function in the C modules.
+ */
+char *git_clone(char *author, char *name);
+
+/**
+ * Parameter: fp -> the filepath to create
+ * Returns: the filepath, or NULL on failure
+ * Description: Create a directory with the `-p` flag.
+ */
+char *mkdirp(char *fp);
+
+/**
+ * Parameter: var -> the environment variable
+ * Returns: the value of the environment variable, or NULL on failure
+ * Description: Get the value of an environment variable. Do not
+ *              include the dollarsign ($) in the variable name.
+ */
+char *env(const char *var);
+
+/**
+ * Returns: the username of the previous user
+ * Description: Get the username of the previous user
+ *              calling forge. For example, if forge was
+ *              ran as: `USER@/bin/sh# sudo forge install ...`, then the
+ *              result will be USER.
+ */
+char *get_prev_user(void);
+
+/**
+ * Parameter: path -> the path to the file to change
+ * Parameter: user -> the user to give ownership to
+ * Returns: 1 on success, or 0 on failure
+ * Description: Change the ownership of `path` to `user`.
+ */
+int change_file_owner(const char *path, const char *user);
+
+/**
+ * Parameter: type -> the type of make we are doing
+ * Returns: 1 on success, or 0 on failure
+ * Description: Performs `make <type>` and utilizes
+ * macros in conf.h. If `type` is NULL, it will just
+ * call `make`.
+ */
+int make(const char *type);
+
+/**
+ * Parameter: flags -> the flags to pass to configure
+ * Parameter: fp    -> the path to configure
+ * Returns: 1 on success, or 0 on failure
+ * Description: Performs `<fp>configure <flags>` and utilizes
+ * macros in conf.h. Make sure to include the last '/' in `fp`!
+ */
+int configure(const char *fp, const char *flags);
+
+/**
+ * Paramater: dir -> the dir to perform `ls` on
+ * Returns: an array of all files found in `dir`.
+ * Description: Perform `ls` on `dir`. Collects all files
+ *              found and returns them in an array. The end
+ *              of the array is guaranteed to be NULL terminated.
+ *              If something goes wrong, the return result will be NULL.
+ *              All entries of the array must be free()'d, and the
+ *              array itself must be free()'d.
+ */
+char **ls(const char *dir);
+
+#endif // CMD_H_INCLUDED
+
+
+#+end_src
+** =forge/array.h=
+#+begin_src c
+#ifndef ARRAY_H_INCLUDED
+#define ARRAY_H_INCLUDED
+
+
+
+
+
+/* This file is used for making stack alloc'd dynamic
+ * arrays where we dont need to use the Array<T> DS. */
+
+/**
+ * Creates a new dynamic array type globally.
+ * Note: Use dyn_array_init() to initialize
+ *       any instances of it.
+ * Example:
+ *   dyn_array_type(int, Int_Array);
+ *
+ *   void f(Int_Array *arr);
+ *
+ *   int main(void) {
+ *       Int_Array arr;
+ *       return 0;
+ *   }
+ */
+#define DYN_ARRAY_TYPE(ty, name) \
+    typedef struct {             \
+        ty *data;                \
+        size_t len, cap;         \
+    } name
+
+#define dyn_array_empty(arr_ty)                 \
+        (arr_ty) {                              \
+                .data = NULL,                   \
+                .len = 0,                       \
+                .cap = 0,                       \
+        }
+
+/**
+ * Initializes a global array type. This is only
+ * used if you use DYN_ARRAY_TYPE().
+ * Example:
+ *   dyn_array_type(int, Int_Array);
+ *
+ *   int main(void) {
+ *       Int_Array arr;
+ *       dyn_array_init_type(arr); // <- here
+ *       return 0;
+ *   }
+ */
+#define dyn_array_init_type(da)                 \
+    do {                                        \
+        (da).data = malloc(sizeof(*(da).data)); \
+        (da).cap = 1;                           \
+        (da).len = 0;                           \
+    } while (0)
+
+/**
+ * Creates a new dynamic array on the stack.
+ * Example:
+ *   dyn_array(int, int_vector);
+ */
+#define dyn_array(ty, name)                                        \
+    struct {                                                       \
+        ty *data;                                                  \
+        size_t len, cap;                                           \
+    } (name) = { .data = (typeof(ty) *)malloc(sizeof(ty)), .len = 0, .cap = 1 };
+
+/**
+ * Append to a dynamic array.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   for (int i = 0; i < 10; ++i)
+ *     dyn_array_append(int_vector, i);
+ */
+#define dyn_array_append(da, value)                                     \
+    do {                                                                \
+        if ((da).len >= (da).cap) {                                     \
+            (da).cap = (da).cap ? (da).cap * 2 : 2;                     \
+            (da).data = (typeof(*((da).data)) *)                        \
+                realloc((da).data,                                      \
+                        (da).cap * sizeof(*((da).data)));               \
+        }                                                               \
+        (da).data[(da).len++] = (value);                                \
+    } while (0)
+
+/**
+ * Free a dynamic array.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_free(int_vector);
+*/
+#define dyn_array_free(da)       \
+    do {                         \
+        if ((da).data != NULL) { \
+                free((da).data); \
+        }                        \
+        (da).len = (da).cap = 0; \
+    } while (0)
+
+/**
+ * Get an element safely at an index.
+ * Will panic if the element is out of bounds.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_append(int_vector, i);
+ *   printf("%d\n", dyn_array_at_s(int_vector));
+ */
+#define dyn_array_at_s(da, i)                                      \
+    ((i) < (da).len ? (da).data[i] : (fprintf(stderr,              \
+    "[dyn_array error]: index %zu is out of bounds (len = %zu)\n", \
+    (size_t)(i), (size_t)(da).len), exit(1), (da).data[0]))
+
+/**
+ * Get an element at an index.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_append(int_vector, i);
+ *   printf("%d\n", dyn_array_at(int_vector));
+ */
+#define dyn_array_at(da, i) ((da).data[i])
+
+/**
+ * Clear a dynamic array.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_append(int_vector, i);
+ *   dyn_array_clear(int_vector);
+ */
+#define dyn_array_clear(da) (da).len = 0;
+
+/**
+ * Remove an element at index `idx`.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   ...
+ *   dyn_array_rm_at(int_vector, 0);
+ *   dyn_array_rm_at(int_vector, 5);
+ *   ...
+ */
+#define dyn_array_rm_at(da, idx) \
+    do {                                                     \
+        for (size_t __i_ = (idx); __i_ < (da).len-1; ++__i_) \
+            (da).data[__i_] = (da).data[__i_+1];             \
+        (da).len--;                                          \
+    } while (0)
+
+#define dyn_array_explode(da) (da).data, (da).len, (da).cap
+
+#define dyn_array_explode_mem(da) &(da).data, &(da).len, &(da).cap
+
+
+DYN_ARRAY_TYPE(int,      int_array);
+DYN_ARRAY_TYPE(char,     char_array);
+DYN_ARRAY_TYPE(char *,   str_array);
+DYN_ARRAY_TYPE(size_t,   size_t_array);
+DYN_ARRAY_TYPE(float,    float_array);
+DYN_ARRAY_TYPE(double,   double_array);
+DYN_ARRAY_TYPE(long,     long_array);
+DYN_ARRAY_TYPE(unsigned, unsigned_array);
+DYN_ARRAY_TYPE(void *,   void_ptr_array);
+
+#endif // ARRAY_H_INCLUDED
+
+
+#+end_src
+** =forge/conf.h=
+#+begin_src c
+#ifndef CONF_H_INCLUDED
+#define CONF_H_INCLUDED
+
+#define FORGE_PREFERRED_MAKEFILE_JFLAGS "$(nproc)"
+
+#define FORGE_PREFERRED_INSTALL_PREFIX "/usr/local"
+
+#define FORGE_PREFERRED_LIB_PREFIX "/usr/local/lib64"
+
+#endif // CONF_H_INCLUDED
+
+
+#+end_src

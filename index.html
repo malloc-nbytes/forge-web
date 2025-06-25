@@ -1,0 +1,1013 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-06-25 Wed 17:16 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Forge (your system)</title>
+<meta name="author" content="malloc-nbytes" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Forge (your system)</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orge5dd0b1">1. About</a></li>
+<li><a href="#org8086a2f">2. Compiling</a></li>
+<li><a href="#org432a6fb">3. Getting Started</a>
+<ul>
+<li><a href="#orgab0fc29">3.1. Walkthrough adding a new project</a></li>
+</ul>
+</li>
+<li><a href="#org064deba">4. Configuring <code>Forge</code></a></li>
+<li><a href="#org4041db8">5. API Reference</a>
+<ul>
+<li><a href="#org27c7aee">5.1. <code>forge/smap.h</code></a></li>
+<li><a href="#orgf0b37ea">5.2. <code>forge/forge.h</code></a></li>
+<li><a href="#org93e09a5">5.3. <code>forge/pkg.h</code></a></li>
+<li><a href="#orgc9eb2f8">5.4. <code>forge/io.h</code></a></li>
+<li><a href="#orgccaa06f">5.5. <code>forge/str.h</code></a></li>
+<li><a href="#orgfd88336">5.6. <code>forge/cmd.h</code></a></li>
+<li><a href="#org3f1b872">5.7. <code>forge/array.h</code></a></li>
+<li><a href="#orga1eb391">5.8. <code>forge/conf.h</code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge5dd0b1" class="outline-2">
+<h2 id="orge5dd0b1"><span class="section-number-2">1.</span> About</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Forge is a package manager where you "forge" your own packages in the form of C source files.
+Every package that you want to install must have an associated C file that contains rules and functions on how to build, install, uninstall, etc.
+To help with this, a suite of functions and data structures are supplied as the forge API.
+</p>
+</div>
+</div>
+<div id="outline-container-org8086a2f" class="outline-2">
+<h2 id="org8086a2f"><span class="section-number-2">2.</span> Compiling</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Forge requires sqlite3. You must either download and untar it yourself, or just run <code>./bootstrap.sh</code>.
+Once this is done, run the following:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash">autoreconf --install
+./configure --prefix=&lt;prefix&gt; --libdir=&lt;dir&gt;
+make
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Where <code>&lt;prefix&gt;</code> is your preferred installation prefix for the binary i.e., <code>/usr</code>, <code>/usr/local</code>.</li>
+<li>Where <code>&lt;libdir&gt;</code> is your preferred installation location for the forge library i.e., <code>/usr/lib64</code>, <code>/usr/local/lib</code>.</li>
+</ul>
+
+<p>
+To install, run <code>sudo make install</code>. To uninstall, run <code>sudo make uninstall</code>.
+</p>
+
+<p>
+Forge installs files to these locations:
+</p>
+<ul class="org-ul">
+<li><code>&lt;prefix&gt;/forge</code> (binary)</li>
+<li><code>&lt;prefix&gt;/include/forge</code> (API Headers)</li>
+<li><code>&lt;dir&gt;/libforge.so</code> (forge library)</li>
+<li><code>/var/lib/forge/forge.db</code> (forge database)</li>
+<li><code>/var/cache/forge/sources/</code> (package sources)</li>
+<li><code>/usr/src/forge/modules/</code> (C package modules)</li>
+<li><code>/usr/lib/forge/modules</code> (compiled C package modules)</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org432a6fb" class="outline-2">
+<h2 id="org432a6fb"><span class="section-number-2">3.</span> Getting Started</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+The first time you run <code>forge</code> must be as root. This sets up the database. All subsequent calls do not need it
+(unless the action has an R tag, see <code>--help</code> for more information).
+</p>
+
+<p>
+To begin creating a new package, run <code>sudo forge new &lt;pkg&gt;</code>. This will open an editor to start definining the
+package rules and behavior. When you are finished, save and quit.
+</p>
+
+<p>
+When new packages are added, they must be built with <code>sudo forge --rebuild</code>. This will compile them and show
+any errors if needed.
+</p>
+
+<p>
+If there are errors, you can run <code>sudo forge edit &lt;pkg&gt;</code> to start editing it again.
+</p>
+
+<p>
+When all of your packages have been compiled, run <code>forge list</code> to see all available. You can then run the following to install them:
+<code>sudo forge install &lt;pkg1&gt; &lt;pkg2&gt;, ..., &lt;pkgN&gt;</code>. If you want to remove them, run <code>sudo forge uninstall &lt;pkg1&gt; &lt;pkg2&gt;, ..., &lt;pkgN&gt;</code>.
+If you want to update, do <code>sudo forge update &lt;pkg1&gt; &lt;pkg2&gt;, ..., &lt;pkgN&gt;</code> or have no arguments to update all of them.
+</p>
+
+<p>
+You will notice that there are packages already available when doing <code>forge list</code>. These were downloaded from the <code>forge-modules</code> repository.
+These cannot be edited, but can be updated by doing <code>forge --rebuild --sync</code> or <code>forge -rs</code>.
+</p>
+</div>
+<div id="outline-container-orgab0fc29" class="outline-3">
+<h3 id="orgab0fc29"><span class="section-number-3">3.1.</span> Walkthrough adding a new project</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Here is an example of how to add a package.
+</p>
+
+<p>
+I will add one of my packages called <code>AnimX</code>.
+</p>
+
+<p>
+Start the module with `forge new malloc-nbytes@AnimX`. This will generate the following:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#include &lt;forge/forge.h&gt;
+
+char *deps[] = {NULL}; // Must be NULL terminated
+
+char *getname(void) { return "author@pkg_name"; }
+char *getver(void) { return "1.0.0"; }
+char *getdesc(void) { return "My Description"; }
+char **getdeps(void) { return deps; }
+char *download(void) {
+        return NULL; // should return the name of the final directory!
+}
+void build(void) {}
+void install(void) {}
+void uninstall(void) {}
+int update(void) {
+        return 0; // return 1 if it needs a rebuild, 0 otherwise
+}
+
+FORGE_GLOBAL pkg package = {
+        .name = getname,
+        .ver = getver,
+        .desc = getdesc,
+        .deps = NULL,
+        .download = download,
+        .build = build,
+        .install = install,
+        .uninstall = uninstall,
+        .update = forge_pkg_git_update, // or define your own if not using git
+};
+</pre>
+</div>
+
+<p>
+Start filling out the missing fields. Also fill out how to build, install, uninstall, and (optionally) update.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#include &lt;forge/forge.h&gt;
+
+char *getname(void) { return "malloc-nbytes@AnimX"; }
+char *getver(void) { return "1.0.0"; }
+char *getdesc(void) { return "Animated Wallpapers for X"; }
+char *download(void) {
+        // This download() function must return the name
+        // of the directory that gets downloaded. The result
+        // of git_clone() will return "AnimX". You could also do:
+        //  char *download(void) {
+        //    cmd("git clone https://www.github.com/malloc-nbytes/AnimX.git");
+        //    return "AnimX";
+        //  }
+        return git_clone("malloc-nbytes", "AnimX");
+}
+void build(void) {
+        cmd("autoreconf --install");
+        configure("./", NULL);
+        make(NULL);
+}
+void install(void) {
+        make("install");
+}
+void uninstall(void) {
+        make("uninstall");
+}
+
+FORGE_GLOBAL pkg package = {
+        .name = getname,
+        .ver = getver,
+        .desc = getdesc,
+        .deps = NULL,
+        .download = download,
+        .build = build,
+        .install = install,
+        .uninstall = uninstall,
+        .update = forge_pkg_git_update, // using default git update
+};
+</pre>
+</div>
+
+<p>
+I have decided to get rid of the <code>update()</code> function because, since this is a <code>git</code> repo, we can use
+the <code>forge_pkg_git_update()</code> provided by <code>forge/pkg.h</code> (included by <code>forge/forge.h</code>). If you were to
+create your own <code>update()</code> function, it must return <code>1</code> if it should get the new changes and rebuild,
+and <code>0</code> if otherwise.
+</p>
+
+<p>
+If you do not know any of the other functions that are being used i.e., <code>cmd()</code>, <code>make()</code>, <code>configure()</code>,
+run <code>forge apilist</code> and then <code>forge api &lt;api_name&gt;</code> to see documentation.
+</p>
+
+<p>
+Once you are done with your package, call <code>forge --rebuild # or forge -r</code> to rebuild all
+<code>C</code> modules. If there are any errors, they will be reported. If you need to fix anything,
+do <code>forge edit &lt;pkgname&gt;</code>.
+</p>
+
+<p>
+You should now see your new package available by running <code>forge list</code>. To get rid of it, run <code>forge drop &lt;pkgname&gt;</code>.
+This will create a backup and you can use <code>forge restore &lt;pkgname&gt;</code> to get it back.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org064deba" class="outline-2">
+<h2 id="org064deba"><span class="section-number-2">4.</span> Configuring <code>Forge</code></h2>
+<div class="outline-text-2" id="text-4">
+<p>
+The configuration file is compiled with <code>forge</code>, meaning that if you need to edit it, you must also
+recompile to get the changes. You can edit it by doing <code>forge editconf</code>. Once your changes are done,
+do <code>forge updateforge</code> (this requires an internet connection).
+</p>
+</div>
+</div>
+<div id="outline-container-org4041db8" class="outline-2">
+<h2 id="org4041db8"><span class="section-number-2">5.</span> API Reference</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org27c7aee" class="outline-3">
+<h3 id="org27c7aee"><span class="section-number-3">5.1.</span> <code>forge/smap.h</code></h3>
+<div class="outline-text-3" id="text-5-1">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef SMAP_H_INCLUDED
+#define SMAP_H_INCLUDED
+
+#include &lt;stddef.h&gt;
+
+#define FORGE_SMAP_DEFAULT_TBL_CAPACITY 2048
+
+typedef struct __forge_smap_node {
+        char *k; // owns the string
+        void *v;
+        struct __forge_smap_node *n;
+} __forge_smap_node;
+
+typedef struct {
+        __forge_smap_node **tbl;
+        size_t len; // number of table entries
+        size_t cap; // capacity of table
+        size_t sz; // how many total nodes
+} forge_smap;
+
+/**
+ * Returns: a new string map
+ * Description: Create a new string map. Make sure to
+ *              call forge_smap_destroy() to free memory.
+ */
+forge_smap forge_smap_create(void);
+
+/**
+ * Parameter: map -&gt; the map to insert to
+ * Parameter: k   -&gt; the key
+ * Parameter: v   -&gt; the value
+ * Description: Insert key `k` with value `v` into the map `map`.
+ */
+void forge_smap_insert(forge_smap *map, const char *k, void *v);
+
+/**
+ * Parameter: map -&gt; the map to query
+ * Parameter: k   -&gt; the key to check
+ * Returns: 1 if found, 0 if otherwise
+ * Description: See if the key `k` is inside of the map `map`.
+ */
+int forge_smap_contains(const forge_smap *map, const char *k);
+
+/**
+ * Parameter: map -&gt; the map to get from
+ * Parameter: k   -&gt; the key with the associated value
+ * Returns: the value of of the key `k`.
+ * Description: Get the value that the key `k` is associated with.
+ */
+void *forge_smap_get(const forge_smap *map, const char *k);
+
+/**
+ * Parameter: map -&gt; the map to destroy
+ * Description: free()'s all memory that `map` allocates.
+ */
+void forge_smap_destroy(forge_smap *map);
+
+/**
+ * Parameter: map -&gt; the map to iterate
+ * Returns: an array of keys (NULL terminated, NULL on failure)
+ * Description: Use this function to get all keys inside of
+ *              the map. It is guaranteed to be NULL terminated.
+ *              The result needs to be free()'d. The individual strings
+ *              do not need to be free()'d.
+ */
+char **smap_iter(const forge_smap *map);
+
+/**
+ * Paramter: map -&gt; the map to get the size from
+ * Returns: the number of nodes in the map
+ * Description: Get the number of nodes stored inside of `map`.
+ */
+size_t forge_smap_size(const forge_smap *map);
+
+#endif // SMAP_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf0b37ea" class="outline-3">
+<h3 id="orgf0b37ea"><span class="section-number-3">5.2.</span> <code>forge/forge.h</code></h3>
+<div class="outline-text-3" id="text-5-2">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef FORGE_H_INCLUDED
+#define FORGE_H_INCLUDED
+
+#include "forge/pkg.h"
+#include "forge/cmd.h"
+#include "forge/str.h"
+#include "forge/array.h"
+#include "forge/io.h"
+#include "forge/smap.h"
+#include "forge/conf.h"
+
+/**
+ * This file is solely used for including all
+ * API headers. Nothing else should be added here!
+ */
+
+#endif // FORGE_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org93e09a5" class="outline-3">
+<h3 id="org93e09a5"><span class="section-number-3">5.3.</span> <code>forge/pkg.h</code></h3>
+<div class="outline-text-3" id="text-5-3">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef PKG_H_INCLUDED
+#define PKG_H_INCLUDED
+
+#include &lt;stddef.h&gt;
+
+#define FORGE_GLOBAL __attribute__((visibility("default")))
+
+typedef struct {
+        char *(*name)(void);
+        char *(*ver)(void);
+        char *(*desc)(void);
+        char **(*deps)(void);
+        char *(*download)(void);
+        void (*build)(void);
+        void (*install)(void);
+        void (*uninstall)(void);
+        int (*update)(void);
+} pkg;
+
+/**
+ * Returns: 1 if it should re-download the package,
+ *          or 0 if it shouldn't.
+ * Description: Performs the built-in way of doing
+ *              an update if the package uses git.
+ */
+int forge_pkg_git_update(void);
+
+#endif // PKG_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc9eb2f8" class="outline-3">
+<h3 id="orgc9eb2f8"><span class="section-number-3">5.4.</span> <code>forge/io.h</code></h3>
+<div class="outline-text-3" id="text-5-4">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef IO_H_INCLUDED
+#define IO_H_INCLUDED
+
+/**
+ * Parameter: fp -&gt; the filepath
+ * Returns: 1 if exists, 0 if not exists
+ * Description: Checks if the filepath `fp` exists.
+ */
+int forge_io_filepath_exists(const char *fp);
+
+/**
+ * Parameter: fp              -&gt; the filepath
+ * Parameter: force_overwrite -&gt; should we overwrite the file
+ *                               even if it exists?
+ * Description: Create a file at `fp`. If `force_overwrite` is
+ *              set to 1, it will truncate the file if it exists.
+ */
+void forge_io_create_file(const char *fp, int force_overwrite);
+
+/**
+ * Parameter: fp -&gt; the filepath
+ * Returns: the bytes of the file
+ * Description: Read all bytes at the filepath `fp`.
+ */
+char *forge_io_read_file_to_cstr(const char *fp);
+
+/**
+ * Parameter: fp -&gt; the filepath
+ * Returns: lines of the file, end of the array is guaranteed
+ *          to be NULL.
+ * Description: Read all lines at the filepath `fp`.
+ */
+char **forge_io_read_file_to_lines(const char *fp);
+
+/**
+ * Parameter: fp -&gt; the filepath
+ * Returns: the absolute filepath of `fp`
+ * Description: Get the absolute path of `fp`.
+ */
+char *forge_io_resolve_absolute_path(const char *fp);
+
+/**
+ * Parameter: fp      -&gt; the filepath
+ * Parameter: content -&gt; the bytes to write to `fp`
+ * Returns: 1 on success, 0 on failure
+ * Description: Write `content` to `fp`.
+ */
+int forge_io_write_file(const char *fp, const char *content);
+
+#endif // IO_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgccaa06f" class="outline-3">
+<h3 id="orgccaa06f"><span class="section-number-3">5.5.</span> <code>forge/str.h</code></h3>
+<div class="outline-text-3" id="text-5-5">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef STR_H_INCLUDED
+#define STR_H_INCLUDED
+
+typedef struct {
+        char *data;
+        size_t len, cap;
+} forge_str;
+
+forge_str forge_str_create(void);
+forge_str forge_str_from(const char *s);
+void forge_str_clear(forge_str *fs);
+void forge_str_destroy(forge_str *fs);
+void forge_str_append(forge_str *fs, char c);
+void forge_str_concat(forge_str *fs, const char *s);
+int forge_str_eq(const forge_str *s0, const forge_str *s1);
+int forge_str_eq_cstr(const forge_str *s0, const char *s1);
+char *forge_str_to_cstr(const forge_str *fs);
+char *forge_str_contains_substr(
+        const forge_str *fs,
+        const char *substr,
+        int case_sensitive
+);
+#endif // STR_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfd88336" class="outline-3">
+<h3 id="orgfd88336"><span class="section-number-3">5.6.</span> <code>forge/cmd.h</code></h3>
+<div class="outline-text-3" id="text-5-6">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef CMD_H_INCLUDED
+#define CMD_H_INCLUDED
+
+/**
+ * Parameter: fp -&gt; the filepath to cd into
+ * Returns: 1 on success, 0 on failure
+ * Description: cd into the filepath `fp`.
+ */
+int cd(const char *fp);
+
+/**
+ * Parameter: fp -&gt; the filepath to cd into
+ * Returns: 1 on success, 0 on failure
+ * Description: the same as cd(), but silent.
+ */
+int cd_silent(const char *fp);
+
+/**
+ * Parameter: cmd -&gt; the command to execute
+ * Returns: 1 on success, 0 on failure
+ * Description: Issue a BASH command.
+ */
+int cmd(const char *cmd);
+
+/**
+ * Parameter: cmd      -&gt; the command to execute
+ * Parameter: username -&gt; the user to execute the command as
+ * Returns: 1 on success, 0 on failure
+ * Description: Issue a BASH command as a specific user.
+ *              This is useful if the program is being ran
+ *              through `sudo` and you need to create some
+ *              files not in /root/. It might be useful to
+ *              call get_prev_user() to get the user that
+ *              ran forge through sudo.
+ */
+int cmd_as(const char *cmd, const char *username);
+
+/**
+ * Parameter: cmd -&gt; the command to execute
+ * Returns: the output of the command, or NULL on failure
+ * Description: Issue a BASH command and capture the output.
+ *              If the command fails or something goes wrong,
+ *              return return result will be NULL.
+ */
+char *cmdout(const char *cmd);
+
+/**
+ * Parameter: author -&gt; the author of the program
+ * Parameter: name   -&gt; the name of the program
+ * Returns: the name of the program
+ * Description: Do a `git clone https://www.github.com/&lt;author&gt;/&lt;name&gt;.git`.
+ *              This function returns the name of the command as it is
+ *              convenient for the download() function in the C modules.
+ */
+char *git_clone(char *author, char *name);
+
+/**
+ * Parameter: fp -&gt; the filepath to create
+ * Returns: the filepath, or NULL on failure
+ * Description: Create a directory with the `-p` flag.
+ */
+char *mkdirp(char *fp);
+
+/**
+ * Parameter: var -&gt; the environment variable
+ * Returns: the value of the environment variable, or NULL on failure
+ * Description: Get the value of an environment variable. Do not
+ *              include the dollarsign ($) in the variable name.
+ */
+char *env(const char *var);
+
+/**
+ * Returns: the username of the previous user
+ * Description: Get the username of the previous user
+ *              calling forge. For example, if forge was
+ *              ran as: `USER@/bin/sh# sudo forge install ...`, then the
+ *              result will be USER.
+ */
+char *get_prev_user(void);
+
+/**
+ * Parameter: path -&gt; the path to the file to change
+ * Parameter: user -&gt; the user to give ownership to
+ * Returns: 1 on success, or 0 on failure
+ * Description: Change the ownership of `path` to `user`.
+ */
+int change_file_owner(const char *path, const char *user);
+
+/**
+ * Parameter: type -&gt; the type of make we are doing
+ * Returns: 1 on success, or 0 on failure
+ * Description: Performs `make &lt;type&gt;` and utilizes
+ * macros in conf.h. If `type` is NULL, it will just
+ * call `make`.
+ */
+int make(const char *type);
+
+/**
+ * Parameter: flags -&gt; the flags to pass to configure
+ * Parameter: fp    -&gt; the path to configure
+ * Returns: 1 on success, or 0 on failure
+ * Description: Performs `&lt;fp&gt;configure &lt;flags&gt;` and utilizes
+ * macros in conf.h. Make sure to include the last '/' in `fp`!
+ */
+int configure(const char *fp, const char *flags);
+
+/**
+ * Paramater: dir -&gt; the dir to perform `ls` on
+ * Returns: an array of all files found in `dir`.
+ * Description: Perform `ls` on `dir`. Collects all files
+ *              found and returns them in an array. The end
+ *              of the array is guaranteed to be NULL terminated.
+ *              If something goes wrong, the return result will be NULL.
+ *              All entries of the array must be free()'d, and the
+ *              array itself must be free()'d.
+ */
+char **ls(const char *dir);
+
+#endif // CMD_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3f1b872" class="outline-3">
+<h3 id="org3f1b872"><span class="section-number-3">5.7.</span> <code>forge/array.h</code></h3>
+<div class="outline-text-3" id="text-5-7">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef ARRAY_H_INCLUDED
+#define ARRAY_H_INCLUDED
+
+
+
+
+
+/* This file is used for making stack alloc'd dynamic
+ * arrays where we dont need to use the Array&lt;T&gt; DS. */
+
+/**
+ * Creates a new dynamic array type globally.
+ * Note: Use dyn_array_init() to initialize
+ *       any instances of it.
+ * Example:
+ *   dyn_array_type(int, Int_Array);
+ *
+ *   void f(Int_Array *arr);
+ *
+ *   int main(void) {
+ *       Int_Array arr;
+ *       return 0;
+ *   }
+ */
+#define DYN_ARRAY_TYPE(ty, name) \
+    typedef struct {             \
+        ty *data;                \
+        size_t len, cap;         \
+    } name
+
+#define dyn_array_empty(arr_ty)                 \
+        (arr_ty) {                              \
+                .data = NULL,                   \
+                .len = 0,                       \
+                .cap = 0,                       \
+        }
+
+/**
+ * Initializes a global array type. This is only
+ * used if you use DYN_ARRAY_TYPE().
+ * Example:
+ *   dyn_array_type(int, Int_Array);
+ *
+ *   int main(void) {
+ *       Int_Array arr;
+ *       dyn_array_init_type(arr); // &lt;- here
+ *       return 0;
+ *   }
+ */
+#define dyn_array_init_type(da)                 \
+    do {                                        \
+        (da).data = malloc(sizeof(*(da).data)); \
+        (da).cap = 1;                           \
+        (da).len = 0;                           \
+    } while (0)
+
+/**
+ * Creates a new dynamic array on the stack.
+ * Example:
+ *   dyn_array(int, int_vector);
+ */
+#define dyn_array(ty, name)                                        \
+    struct {                                                       \
+        ty *data;                                                  \
+        size_t len, cap;                                           \
+    } (name) = { .data = (typeof(ty) *)malloc(sizeof(ty)), .len = 0, .cap = 1 };
+
+/**
+ * Append to a dynamic array.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   for (int i = 0; i &lt; 10; ++i)
+ *     dyn_array_append(int_vector, i);
+ */
+#define dyn_array_append(da, value)                                     \
+    do {                                                                \
+        if ((da).len &gt;= (da).cap) {                                     \
+            (da).cap = (da).cap ? (da).cap * 2 : 2;                     \
+            (da).data = (typeof(*((da).data)) *)                        \
+                realloc((da).data,                                      \
+                        (da).cap * sizeof(*((da).data)));               \
+        }                                                               \
+        (da).data[(da).len++] = (value);                                \
+    } while (0)
+
+/**
+ * Free a dynamic array.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_free(int_vector);
+*/
+#define dyn_array_free(da)       \
+    do {                         \
+        if ((da).data != NULL) { \
+                free((da).data); \
+        }                        \
+        (da).len = (da).cap = 0; \
+    } while (0)
+
+/**
+ * Get an element safely at an index.
+ * Will panic if the element is out of bounds.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_append(int_vector, i);
+ *   printf("%d\n", dyn_array_at_s(int_vector));
+ */
+#define dyn_array_at_s(da, i)                                      \
+    ((i) &lt; (da).len ? (da).data[i] : (fprintf(stderr,              \
+    "[dyn_array error]: index %zu is out of bounds (len = %zu)\n", \
+    (size_t)(i), (size_t)(da).len), exit(1), (da).data[0]))
+
+/**
+ * Get an element at an index.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_append(int_vector, i);
+ *   printf("%d\n", dyn_array_at(int_vector));
+ */
+#define dyn_array_at(da, i) ((da).data[i])
+
+/**
+ * Clear a dynamic array.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   dyn_array_append(int_vector, i);
+ *   dyn_array_clear(int_vector);
+ */
+#define dyn_array_clear(da) (da).len = 0;
+
+/**
+ * Remove an element at index `idx`.
+ * Example:
+ *   dyn_array(int, int_vector);
+ *   ...
+ *   dyn_array_rm_at(int_vector, 0);
+ *   dyn_array_rm_at(int_vector, 5);
+ *   ...
+ */
+#define dyn_array_rm_at(da, idx) \
+    do {                                                     \
+        for (size_t __i_ = (idx); __i_ &lt; (da).len-1; ++__i_) \
+            (da).data[__i_] = (da).data[__i_+1];             \
+        (da).len--;                                          \
+    } while (0)
+
+#define dyn_array_explode(da) (da).data, (da).len, (da).cap
+
+#define dyn_array_explode_mem(da) &amp;(da).data, &amp;(da).len, &amp;(da).cap
+
+
+DYN_ARRAY_TYPE(int,      int_array);
+DYN_ARRAY_TYPE(char,     char_array);
+DYN_ARRAY_TYPE(char *,   str_array);
+DYN_ARRAY_TYPE(size_t,   size_t_array);
+DYN_ARRAY_TYPE(float,    float_array);
+DYN_ARRAY_TYPE(double,   double_array);
+DYN_ARRAY_TYPE(long,     long_array);
+DYN_ARRAY_TYPE(unsigned, unsigned_array);
+DYN_ARRAY_TYPE(void *,   void_ptr_array);
+
+#endif // ARRAY_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga1eb391" class="outline-3">
+<h3 id="orga1eb391"><span class="section-number-3">5.8.</span> <code>forge/conf.h</code></h3>
+<div class="outline-text-3" id="text-5-8">
+<div class="org-src-container">
+<pre class="src src-c">#ifndef CONF_H_INCLUDED
+#define CONF_H_INCLUDED
+
+#define FORGE_PREFERRED_MAKEFILE_JFLAGS "$(nproc)"
+
+#define FORGE_PREFERRED_INSTALL_PREFIX "/usr/local"
+
+#define FORGE_PREFERRED_LIB_PREFIX "/usr/local/lib64"
+
+#endif // CONF_H_INCLUDED
+
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: malloc-nbytes</p>
+<p class="date">Created: 2025-06-25 Wed 17:16</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
