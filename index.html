@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-06-25 Wed 17:16 -->
+<!-- 2025-07-10 Thu 15:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Forge (your system)</title>
@@ -201,31 +201,31 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orge5dd0b1">1. About</a></li>
-<li><a href="#org8086a2f">2. Compiling</a></li>
-<li><a href="#org432a6fb">3. Getting Started</a>
+<li><a href="#org1439da3">1. About</a></li>
+<li><a href="#org51832d0">2. Compiling</a></li>
+<li><a href="#org7396c1b">3. Getting Started</a>
 <ul>
-<li><a href="#orgab0fc29">3.1. Walkthrough adding a new project</a></li>
+<li><a href="#org61b3ee0">3.1. Walkthrough adding a new project</a></li>
 </ul>
 </li>
-<li><a href="#org064deba">4. Configuring <code>Forge</code></a></li>
-<li><a href="#org4041db8">5. API Reference</a>
+<li><a href="#org2482964">4. Configuring <code>Forge</code></a></li>
+<li><a href="#orgf0782b9">5. API Reference</a>
 <ul>
-<li><a href="#org27c7aee">5.1. <code>forge/smap.h</code></a></li>
-<li><a href="#orgf0b37ea">5.2. <code>forge/forge.h</code></a></li>
-<li><a href="#org93e09a5">5.3. <code>forge/pkg.h</code></a></li>
-<li><a href="#orgc9eb2f8">5.4. <code>forge/io.h</code></a></li>
-<li><a href="#orgccaa06f">5.5. <code>forge/str.h</code></a></li>
-<li><a href="#orgfd88336">5.6. <code>forge/cmd.h</code></a></li>
-<li><a href="#org3f1b872">5.7. <code>forge/array.h</code></a></li>
-<li><a href="#orga1eb391">5.8. <code>forge/conf.h</code></a></li>
+<li><a href="#org6557370">5.1. <code>forge/smap.h</code></a></li>
+<li><a href="#orgdb065d0">5.2. <code>forge/forge.h</code></a></li>
+<li><a href="#org180d6c7">5.3. <code>forge/pkg.h</code></a></li>
+<li><a href="#org4bee092">5.4. <code>forge/io.h</code></a></li>
+<li><a href="#org99109f4">5.5. <code>forge/str.h</code></a></li>
+<li><a href="#org1692f98">5.6. <code>forge/cmd.h</code></a></li>
+<li><a href="#orga91e344">5.7. <code>forge/array.h</code></a></li>
+<li><a href="#orge729c66">5.8. <code>forge/conf.h</code></a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orge5dd0b1" class="outline-2">
-<h2 id="orge5dd0b1"><span class="section-number-2">1.</span> About</h2>
+<div id="outline-container-org1439da3" class="outline-2">
+<h2 id="org1439da3"><span class="section-number-2">1.</span> About</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Forge is a package manager where you "forge" your own packages in the form of C source files.
@@ -234,8 +234,8 @@ To help with this, a suite of functions and data structures are supplied as the 
 </p>
 </div>
 </div>
-<div id="outline-container-org8086a2f" class="outline-2">
-<h2 id="org8086a2f"><span class="section-number-2">2.</span> Compiling</h2>
+<div id="outline-container-org51832d0" class="outline-2">
+<h2 id="org51832d0"><span class="section-number-2">2.</span> Compiling</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 Forge requires sqlite3. You must either download and untar it yourself, or just run <code>./bootstrap.sh</code>.
@@ -272,8 +272,8 @@ Forge installs files to these locations:
 </ul>
 </div>
 </div>
-<div id="outline-container-org432a6fb" class="outline-2">
-<h2 id="org432a6fb"><span class="section-number-2">3.</span> Getting Started</h2>
+<div id="outline-container-org7396c1b" class="outline-2">
+<h2 id="org7396c1b"><span class="section-number-2">3.</span> Getting Started</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 The first time you run <code>forge</code> must be as root. This sets up the database. All subsequent calls do not need it
@@ -305,8 +305,8 @@ You will notice that there are packages already available when doing <code>forge
 These cannot be edited, but can be updated by doing <code>forge --rebuild --sync</code> or <code>forge -rs</code>.
 </p>
 </div>
-<div id="outline-container-orgab0fc29" class="outline-3">
-<h3 id="orgab0fc29"><span class="section-number-3">3.1.</span> Walkthrough adding a new project</h3>
+<div id="outline-container-org61b3ee0" class="outline-3">
+<h3 id="org61b3ee0"><span class="section-number-3">3.1.</span> Walkthrough adding a new project</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 Here is an example of how to add a package.
@@ -338,6 +338,9 @@ void uninstall(void) {}
 int update(void) {
         return 0; // return 1 if it needs a rebuild, 0 otherwise
 }
+void get_changes(void) {
+        // Pull in changes if update() returns 1
+}
 
 FORGE_GLOBAL pkg package = {
         .name = getname,
@@ -349,6 +352,10 @@ FORGE_GLOBAL pkg package = {
         .install = install,
         .uninstall = uninstall,
         .update = forge_pkg_git_update, // or define your own if not using git
+
+        // Make this NULL to just re-download the source code
+        // or define your own if not using git
+        .get_changes = forge_pkg_git_pull,
 };
 </pre>
 </div>
@@ -384,6 +391,9 @@ void install(void) {
 void uninstall(void) {
         make("uninstall");
 }
+void get_changes(void) {
+        // Pull in changes if update() returns 1
+}
 
 FORGE_GLOBAL pkg package = {
         .name = getname,
@@ -395,6 +405,10 @@ FORGE_GLOBAL pkg package = {
         .install = install,
         .uninstall = uninstall,
         .update = forge_pkg_git_update, // using default git update
+
+        // Make this NULL to just re-download the source code
+        // or define your own if not using git
+        .get_changes = forge_pkg_git_pull,
 };
 </pre>
 </div>
@@ -424,8 +438,8 @@ This will create a backup and you can use <code>forge restore &lt;pkgname&gt;</c
 </div>
 </div>
 </div>
-<div id="outline-container-org064deba" class="outline-2">
-<h2 id="org064deba"><span class="section-number-2">4.</span> Configuring <code>Forge</code></h2>
+<div id="outline-container-org2482964" class="outline-2">
+<h2 id="org2482964"><span class="section-number-2">4.</span> Configuring <code>Forge</code></h2>
 <div class="outline-text-2" id="text-4">
 <p>
 The configuration file is compiled with <code>forge</code>, meaning that if you need to edit it, you must also
@@ -434,12 +448,12 @@ do <code>forge updateforge</code> (this requires an internet connection).
 </p>
 </div>
 </div>
-<div id="outline-container-org4041db8" class="outline-2">
-<h2 id="org4041db8"><span class="section-number-2">5.</span> API Reference</h2>
+<div id="outline-container-orgf0782b9" class="outline-2">
+<h2 id="orgf0782b9"><span class="section-number-2">5.</span> API Reference</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-org27c7aee" class="outline-3">
-<h3 id="org27c7aee"><span class="section-number-3">5.1.</span> <code>forge/smap.h</code></h3>
+<div id="outline-container-org6557370" class="outline-3">
+<h3 id="org6557370"><span class="section-number-3">5.1.</span> <code>forge/smap.h</code></h3>
 <div class="outline-text-3" id="text-5-1">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef SMAP_H_INCLUDED
@@ -523,8 +537,8 @@ size_t forge_smap_size(const forge_smap *map);
 </div>
 </div>
 </div>
-<div id="outline-container-orgf0b37ea" class="outline-3">
-<h3 id="orgf0b37ea"><span class="section-number-3">5.2.</span> <code>forge/forge.h</code></h3>
+<div id="outline-container-orgdb065d0" class="outline-3">
+<h3 id="orgdb065d0"><span class="section-number-3">5.2.</span> <code>forge/forge.h</code></h3>
 <div class="outline-text-3" id="text-5-2">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef FORGE_H_INCLUDED
@@ -550,8 +564,8 @@ size_t forge_smap_size(const forge_smap *map);
 </div>
 </div>
 </div>
-<div id="outline-container-org93e09a5" class="outline-3">
-<h3 id="org93e09a5"><span class="section-number-3">5.3.</span> <code>forge/pkg.h</code></h3>
+<div id="outline-container-org180d6c7" class="outline-3">
+<h3 id="org180d6c7"><span class="section-number-3">5.3.</span> <code>forge/pkg.h</code></h3>
 <div class="outline-text-3" id="text-5-3">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef PKG_H_INCLUDED
@@ -571,6 +585,7 @@ typedef struct {
         void (*install)(void);
         void (*uninstall)(void);
         int (*update)(void);
+        void (*get_changes)(void);
 } pkg;
 
 /**
@@ -581,6 +596,12 @@ typedef struct {
  */
 int forge_pkg_git_update(void);
 
+/**
+ * Description: Performs the built-in way of pulling
+ *              changes if a package uses git.
+ */
+void forge_pkg_git_pull(void);
+
 #endif // PKG_H_INCLUDED
 
 
@@ -588,8 +609,8 @@ int forge_pkg_git_update(void);
 </div>
 </div>
 </div>
-<div id="outline-container-orgc9eb2f8" class="outline-3">
-<h3 id="orgc9eb2f8"><span class="section-number-3">5.4.</span> <code>forge/io.h</code></h3>
+<div id="outline-container-org4bee092" class="outline-3">
+<h3 id="org4bee092"><span class="section-number-3">5.4.</span> <code>forge/io.h</code></h3>
 <div class="outline-text-3" id="text-5-4">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef IO_H_INCLUDED
@@ -648,8 +669,8 @@ int forge_io_write_file(const char *fp, const char *content);
 </div>
 </div>
 </div>
-<div id="outline-container-orgccaa06f" class="outline-3">
-<h3 id="orgccaa06f"><span class="section-number-3">5.5.</span> <code>forge/str.h</code></h3>
+<div id="outline-container-org99109f4" class="outline-3">
+<h3 id="org99109f4"><span class="section-number-3">5.5.</span> <code>forge/str.h</code></h3>
 <div class="outline-text-3" id="text-5-5">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef STR_H_INCLUDED
@@ -681,8 +702,8 @@ char *forge_str_contains_substr(
 </div>
 </div>
 </div>
-<div id="outline-container-orgfd88336" class="outline-3">
-<h3 id="orgfd88336"><span class="section-number-3">5.6.</span> <code>forge/cmd.h</code></h3>
+<div id="outline-container-org1692f98" class="outline-3">
+<h3 id="org1692f98"><span class="section-number-3">5.6.</span> <code>forge/cmd.h</code></h3>
 <div class="outline-text-3" id="text-5-6">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef CMD_H_INCLUDED
@@ -774,7 +795,7 @@ char *get_prev_user(void);
 int change_file_owner(const char *path, const char *user);
 
 /**
- * Parameter: type -&gt; the type of make we are doing
+ * Parameter: type? -&gt; the type of make we are doing
  * Returns: 1 on success, or 0 on failure
  * Description: Performs `make &lt;type&gt;` and utilizes
  * macros in conf.h. If `type` is NULL, it will just
@@ -784,7 +805,7 @@ int make(const char *type);
 
 /**
  * Parameter: flags -&gt; the flags to pass to configure
- * Parameter: fp    -&gt; the path to configure
+ * Parameter: fp?   -&gt; the path to configure
  * Returns: 1 on success, or 0 on failure
  * Description: Performs `&lt;fp&gt;configure &lt;flags&gt;` and utilizes
  * macros in conf.h. Make sure to include the last '/' in `fp`!
@@ -810,8 +831,8 @@ char **ls(const char *dir);
 </div>
 </div>
 </div>
-<div id="outline-container-org3f1b872" class="outline-3">
-<h3 id="org3f1b872"><span class="section-number-3">5.7.</span> <code>forge/array.h</code></h3>
+<div id="outline-container-orga91e344" class="outline-3">
+<h3 id="orga91e344"><span class="section-number-3">5.7.</span> <code>forge/array.h</code></h3>
 <div class="outline-text-3" id="text-5-7">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef ARRAY_H_INCLUDED
@@ -982,8 +1003,8 @@ DYN_ARRAY_TYPE(void *,   void_ptr_array);
 </div>
 </div>
 </div>
-<div id="outline-container-orga1eb391" class="outline-3">
-<h3 id="orga1eb391"><span class="section-number-3">5.8.</span> <code>forge/conf.h</code></h3>
+<div id="outline-container-orge729c66" class="outline-3">
+<h3 id="orge729c66"><span class="section-number-3">5.8.</span> <code>forge/conf.h</code></h3>
 <div class="outline-text-3" id="text-5-8">
 <div class="org-src-container">
 <pre class="src src-c">#ifndef CONF_H_INCLUDED
@@ -1006,7 +1027,7 @@ DYN_ARRAY_TYPE(void *,   void_ptr_array);
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: malloc-nbytes</p>
-<p class="date">Created: 2025-06-25 Wed 17:16</p>
+<p class="date">Created: 2025-07-10 Thu 15:15</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
