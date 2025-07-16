@@ -41,6 +41,7 @@ for i in 0 to len(headers) {
         if !(len(lines[j]) > 2 && lines[j][0] == '/' && lines[j][1] == '/') {
             docs_write_fd.write(lines[j]);
             docs_write_fd.write("\n");
+            println("Writing: ", lines[j]);
         }
     }
 
@@ -48,3 +49,4 @@ for i in 0 to len(headers) {
     docs_write_fd.write("#+end_src\n");
 }
 docs_write_fd.close();
+$"emacs --batch ./index.org -f org-html-export-to-html";
