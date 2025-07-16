@@ -173,8 +173,8 @@ do =forge updateforge= (this requires an internet connection).
 # ENDDOCS
 ** =forge/smap.h=
 #+begin_src c
-#ifndef SMAP_H_INCLUDED
-#define SMAP_H_INCLUDED
+#ifndef FORGE_SMAP_H_INCLUDED
+#define FORGE_SMAP_H_INCLUDED
 
 #include <stddef.h>
 
@@ -238,7 +238,7 @@ void forge_smap_destroy(forge_smap *map);
  *              The result needs to be free()'d. The individual strings
  *              do not need to be free()'d.
  */
-char **smap_iter(const forge_smap *map);
+char **forge_smap_iter(const forge_smap *map);
 
 /**
  * Paramter: map -> the map to get the size from
@@ -247,14 +247,77 @@ char **smap_iter(const forge_smap *map);
  */
 size_t forge_smap_size(const forge_smap *map);
 
-#endif // SMAP_H_INCLUDED
+#endif // FORGE_SMAP_H_INCLUDED
+
+
+#+end_src
+** =forge/arg.h=
+#+begin_src c
+#ifndef FORGE_ARG_H_INCLUDED
+#define FORGE_ARG_H_INCLUDED
+
+#include <stddef.h>
+
+typedef struct forge_arg {
+        // Points to the start of the argument
+        // after any hyphens (max 2).
+        char *s;
+
+        // The number of hyphens (max 2).
+        size_t h;
+
+        // Points to the character after the
+        // first equals is encountered.
+        char *eq;
+
+        // The next argument
+        struct forge_arg *n;
+} forge_arg;
+
+/**
+ * Parameter: argc       -> number of args
+ * Parameter: argv       -> actual args
+ * Parameter: skip_first -> skip the first arg
+ * Returns: linked list of `forge_arg`s
+ * Description: Create a list of args that you can
+ *              query. The `skip_first` parameter is there
+ *              if you do not want the program name to appear
+ *              in the linked list. Also, you should always have
+ *              a copy to the head of this list for `forge_arg_free()`.
+ */
+forge_arg *forge_arg_alloc(
+        int    argc,
+        char **argv,
+        int    skip_first
+);
+
+/**
+ * Parameter: arg -> the pointer to the start of the arg list
+ * Description: Free all memory allocated for the linked
+ *              list of forge_args. This function should
+ *              take the head of a linked list.
+ */
+void forge_arg_free(forge_arg *arg);
+
+#endif // FORGE_ARG_H_INCLUDED
+
+
+#+end_src
+** =forge/rdln.h=
+#+begin_src c
+#ifndef FORGE_RDLN_H_INCLUDED
+#define FORGE_RDLN_H_INCLUDED
+
+char *forge_rdln(const char *prompt);
+
+#endif // FORGE_RDLN_H_INCLUDED
 
 
 #+end_src
 ** =forge/forge.h=
 #+begin_src c
-#ifndef FORGE_H_INCLUDED
-#define FORGE_H_INCLUDED
+#ifndef FORGE_FORGE_H_INCLUDED
+#define FORGE_FORGE_H_INCLUDED
 
 #include "forge/pkg.h"
 #include "forge/cmd.h"
@@ -262,6 +325,12 @@ size_t forge_smap_size(const forge_smap *map);
 #include "forge/array.h"
 #include "forge/io.h"
 #include "forge/smap.h"
+#include "forge/viewer.h"
+#include "forge/colors.h"
+#include "forge/mem.h"
+#include "forge/ctrl.h"
+#include "forge/rdln.h"
+#include "forge/arg.h"
 #include "forge/conf.h"
 
 /**
@@ -269,14 +338,14 @@ size_t forge_smap_size(const forge_smap *map);
  * API headers. Nothing else should be added here!
  */
 
-#endif // FORGE_H_INCLUDED
+#endif // FORGE_FORGE_H_INCLUDED
 
 
 #+end_src
 ** =forge/pkg.h=
 #+begin_src c
-#ifndef PKG_H_INCLUDED
-#define PKG_H_INCLUDED
+#ifndef FORGE_PKG_H_INCLUDED
+#define FORGE_PKG_H_INCLUDED
 
 #include <stddef.h>
 
@@ -309,14 +378,28 @@ int forge_pkg_git_update(void);
  */
 void forge_pkg_git_pull(void);
 
-#endif // PKG_H_INCLUDED
+/**
+ * Description: Used in the .update part of the pkg struct.
+ *              Use this if you want to notify that updates
+ *              need manual checking.
+ */
+#define forge_pkg_update_manual_check NULL
+
+/**
+ * Description: Used in the .get_changes part of the pkg struct.
+ *              Use this if you want to completely redownload
+ *              the source code to get the new changes.
+ */
+#define forge_pkg_get_changes_redownload NULL
+
+#endif // FORGE_PKG_H_INCLUDED
 
 
 #+end_src
 ** =forge/io.h=
 #+begin_src c
-#ifndef IO_H_INCLUDED
-#define IO_H_INCLUDED
+#ifndef FORGE_IO_H_INCLUDED
+#define FORGE_IO_H_INCLUDED
 
 /**
  * Parameter: fp -> the filepath
@@ -364,42 +447,193 @@ char *forge_io_resolve_absolute_path(const char *fp);
  */
 int forge_io_write_file(const char *fp, const char *content);
 
-#endif // IO_H_INCLUDED
+/**
+ * Parameter: fp      -> the filepath
+ * Parameter: lines   -> the lines to write
+ * Parameter: lines_n -> how many lines to write
+ * Returns: 1 on success, 0 on failure
+ * Description: Write `lines_n` lines from `lines` to the filepath `fp`.
+ */
+int forge_io_write_lines(
+        const char *fp,
+        const char **lines,
+        size_t lines_n
+);
+
+/**
+ * Parameter: path -> the filepath to check
+ * Returns: 1 if it is a directory, and 0 if not
+ * Description: Check if `path` is a directory.
+ */
+int forge_io_is_dir(const char *path);
+
+/**
+ * Parameter: dir      -> the directory to search
+ * Parameter: filename -> the file to search for
+ * Returns: 1 if found, and 0 if otherwise
+ * Description: Checks to see if `dir` contains `filename`.
+ */
+int forge_io_dir_contains_file(const char *dir, const char *filename);
+
+/**
+ * Parameter: path -> the path to extract the basename from
+ * Returns: the basename
+ * Description: Given some path i.e., `/home/user/dev/main.c`,
+ *              will extract the basename `main.c` from the path.
+ */
+const char *forge_io_basename(const char *path);
+
+/**
+ * Parameter: path -> the directory to remove
+ * Return: 1 on success, and 0 on failure.
+ * Description: Remove the directory `path`.
+ */
+int forge_io_rm_dir(const char *path);
+
+#endif // FORGE_IO_H_INCLUDED
 
 
 #+end_src
 ** =forge/str.h=
 #+begin_src c
-#ifndef STR_H_INCLUDED
-#define STR_H_INCLUDED
+#ifndef FORGE_STR_H_INCLUDED
+#define FORGE_STR_H_INCLUDED
 
 typedef struct {
         char *data;
         size_t len, cap;
 } forge_str;
 
+/**
+ * Returns: an empty forge_str
+ * Description: Create a new empty forge_str.
+ */
 forge_str forge_str_create(void);
+
+/**
+ * Parameter: s -> the string to create from
+ * Returns: a new forge_str created from `s`.
+ * Description: Creates a new forge_str with the
+ *              content of `s`.
+ */
 forge_str forge_str_from(const char *s);
+
+/**
+ * Parameter: s -> the string to take from
+ * Returns: a new forge_str created from `s`.
+ * Description: Creates a new forge_str with the
+ *              content of `s`. It will take ownership
+ *              of the pointer so it will be destroyed
+ *              in `forge_str_destroy()`.
+ */
+forge_str forge_str_take(char *s);
+
+/**
+ * Parameter: fs -> the forge_str
+ * Description: Clear the string `fs`.
+ */
 void forge_str_clear(forge_str *fs);
+
+/**
+ * Parameter: fs -> the forge_str
+ * Description: free() all memory associated with `fs`. This also
+                resets all other members of `fs` so it can be re-used.
+ */
 void forge_str_destroy(forge_str *fs);
+
+/**
+ * Parameter: fs -> the forge_str to append to
+ * Parameter: c  -> the character to append
+ * Description: Append the character `c` to `fs`.
+ */
 void forge_str_append(forge_str *fs, char c);
+
+/**
+ * Parameter: fs -> the forge_str to concat to
+ * Parameter: s -> the string to concat
+ * Description: Concatinate `s` to `fs`.
+ */
 void forge_str_concat(forge_str *fs, const char *s);
+
+/**
+ * Paramter: s0 -> the first forge_str
+ * Paramter: s1 -> the second forge_str
+ * Returns: 1 if they are equal, and 0 if otherwise
+ * Description: Check if s0 == s1.
+ */
 int forge_str_eq(const forge_str *s0, const forge_str *s1);
+
+/**
+ * Parameter: s0 -> the forge_str
+ * Parameter: s1 -> the c_str
+ * Returns: 1 if they are equal, and 0 if otherwise
+ * Description: Checks if s0.data == s1.
+ */
 int forge_str_eq_cstr(const forge_str *s0, const char *s1);
+
+/**
+ * Parameter: fs -> the forge_str
+ * Returns: the c_str of `fs`
+ * Description: Get the underlying c_str data of `fs`.
+ */
 char *forge_str_to_cstr(const forge_str *fs);
+
+/**
+ * Parameter: fs             -> the forge_str to search in
+ * Parameter: substr         -> the substring to search
+ * Parameter: case_sensitive -> whether it should be case sensitive
+ * Returns: a pointer to the start of the substring if found,
+ *          or NULL if not found
+ * Description: Check `fs` for substring `substr`.
+ */
 char *forge_str_contains_substr(
         const forge_str *fs,
         const char *substr,
         int case_sensitive
 );
-#endif // STR_H_INCLUDED
+
+/**
+ * Parameter: fs  -> the forge_str to insert into
+ * Parameter: c   -> the character to insert
+ * Parameter: idx -> the index to insert at
+ * Description: Insert character `c` into string `fs` at index `idx`.
+ */
+void forge_str_insert_at(forge_str *fs, char c, size_t idx);
+
+/**
+ * Parameter: first -> the first string
+ * VARIADIC         -> other strings
+ * Returns: the concatination of all strings
+ * Description: Build a string of the variadic parameters.
+ *              Note: Remember to put NULL as the last argument!
+ */
+char *forge_str_builder(const char *first, ...);
+
+/**
+ * Parameter: fs -> the forge_string
+ * Returns: the character that was removed
+ * Description: Pop's the last character off of
+ *              the string `fs`. It is up to you
+ *              to make sure that `fs.len > 0`.
+ */
+char forge_str_pop(forge_str *fs);
+
+char forge_str_rm_at(forge_str *fs, size_t idx);
+
+#endif // FORGE_STR_H_INCLUDED
 
 
 #+end_src
 ** =forge/cmd.h=
 #+begin_src c
-#ifndef CMD_H_INCLUDED
-#define CMD_H_INCLUDED
+#ifndef FORGE_CMD_H_INCLUDED
+#define FORGE_CMD_H_INCLUDED
+
+/**
+ * Returns: the current working directory
+ * Description: Gets the current working directory or NULL on failure.
+ */
+char *cwd(void);
 
 /**
  * Parameter: fp -> the filepath to cd into
@@ -516,14 +750,72 @@ int configure(const char *fp, const char *flags);
  */
 char **ls(const char *dir);
 
-#endif // CMD_H_INCLUDED
+/**
+ * Paramter: path -> the path to check
+ * Returns: 1 if `path` is a git directory, and 0 if otherwise
+ * Description: Check if `path` is a git directory.
+ */
+int is_git_dir(const char *path);
+
+#endif // FORGE_CMD_H_INCLUDED
+
+
+#+end_src
+** =forge/colors.h=
+#+begin_src c
+#ifndef FORGE_COLORS_H_INCLUDED
+#define FORGE_COLORS_H_INCLUDED
+
+#define YELLOW               "\033[93m"
+#define GREEN                "\033[32m"
+#define BRIGHT_GREEN         "\033[92m"
+#define GRAY                 "\033[90m"
+#define RED                  "\033[31m"
+#define BLUE                 "\033[94m"
+#define CYAN                 "\033[96m"
+#define MAGENTA              "\033[95m"
+#define WHITE                "\033[97m"
+#define BLACK                "\033[30m"
+#define CYAN                 "\033[96m"
+#define PINK                 "\033[95m"
+#define BRIGHT_PINK          "\033[38;5;213m"
+#define PURPLE               "\033[35m"
+#define BRIGHT_PURPLE        "\033[95m"
+#define ORANGE               "\033[38;5;214m"
+#define BROWN                "\033[38;5;94m"
+
+#define UNDERLINE            "\033[4m"
+#define BOLD                 "\033[1m"
+#define ITALIC               "\033[3m"
+#define DIM                  "\033[2m"
+#define INVERT               "\033[7m"
+#define RESET                "\033[0m"
+
+char *forge_colors_c_to_string(const char *s);
+
+#endif // FORGE_COLORS_H_INCLUDED
+
+
+#+end_src
+** =forge/mem.h=
+#+begin_src c
+#ifndef FORGE_MEM_H_INCLUDED
+#define FORGE_MEM_H_INCLUDED
+
+#include <stdint.h>
+
+void *forge_mem_malloc(size_t nbytes);
+
+#endif // FORGE_MEM_H_INCLUDED
 
 
 #+end_src
 ** =forge/array.h=
 #+begin_src c
-#ifndef ARRAY_H_INCLUDED
-#define ARRAY_H_INCLUDED
+#ifndef FORGE_ARRAY_H_INCLUDED
+#define FORGE_ARRAY_H_INCLUDED
+
+#include <stdlib.h>
 
 
 
@@ -683,14 +975,214 @@ DYN_ARRAY_TYPE(long,     long_array);
 DYN_ARRAY_TYPE(unsigned, unsigned_array);
 DYN_ARRAY_TYPE(void *,   void_ptr_array);
 
-#endif // ARRAY_H_INCLUDED
+#endif // FORGE_ARRAY_H_INCLUDED
+
+
+#+end_src
+** =forge/ctrl.h=
+#+begin_src c
+#ifndef FORGE_CTRL_H_INCLUDED
+#define FORGE_CTRL_H_INCLUDED
+
+#include <termios.h>
+
+#define CTRL_A 1
+#define CTRL_B 2
+#define CTRL_C 3
+#define CTRL_D 4
+#define CTRL_E 5
+#define CTRL_F 6
+#define CTRL_G 7
+#define CTRL_H 8
+#define CTRL_I 9
+#define CTRL_J 10
+#define CTRL_K 11
+#define CTRL_L 12
+#define CTRL_M 13
+#define CTRL_N 14
+#define CTRL_O 15
+#define CTRL_P 16
+#define CTRL_Q 17
+#define CTRL_R 18
+#define CTRL_S 19
+#define CTRL_T 20
+#define CTRL_U 21
+#define CTRL_V 22
+#define CTRL_W 23
+#define CTRL_X 24
+#define CTRL_Y 25
+#define CTRL_Z 26
+
+#define UP_ARROW    'A'
+#define DOWN_ARROW  'B'
+#define RIGHT_ARROW 'C'
+#define LEFT_ARROW  'D'
+
+/**
+ * Parameter: ch -> the character to compare
+ * Returns: whether `ch` is a newline
+ * Description: Check if `ch` is a newline.
+ */
+#define ENTER(ch)     ((ch) == '\n')
+
+/**
+ * Parameter: ch -> the character to compare
+ * Returns: whether `ch` is a backspace
+ * Description: Check if `ch` is a backspace.
+ */
+#define BACKSPACE(ch) ((ch) == 8 || (ch) == 127)
+
+/**
+ * Parameter: ch -> the character to compare
+ * Returns: whether `ch` is a tab
+ * Description: Check if `ch` is a tab.
+ */
+#define TAB(ch)       ((ch) == '\t')
+
+/**
+ * Parameter: ch -> the character to compare
+ * Returns: whether `ch` is an escape sequence
+ * Description: Check if `ch` is an escape sequence.
+ */
+#define ESCSEQ(ch)    ((ch) == 27)
+
+/**
+ * Parameter: ch -> the character to compare
+ * Returns: whether `ch` is a control sequence
+ * Description: Check if `ch` is a control sequence.
+ */
+#define CSI(ch)       ((ch) == '[')
+
+#define CURSOR_LEFT(n)  printf("\033[%dD", n);
+#define CURSOR_RIGHT(n) printf("\033[%dC", n);
+#define CURSOR_UP(n)    printf("\033[%dA", n);
+#define CURSOR_DOWN(n)  printf("\033[%dB", n);
+
+typedef enum {
+    USER_INPUT_TYPE_CTRL,
+    USER_INPUT_TYPE_ALT,
+    USER_INPUT_TYPE_ARROW,
+    USER_INPUT_TYPE_SHIFT_ARROW,
+    USER_INPUT_TYPE_NORMAL,
+    USER_INPUT_TYPE_UNKNOWN,
+} forge_ctrl_input_type;
+
+/**
+ * Parameter: fd          -> the file descriptor
+ * Parameter: old_termios -> the termios to copy bits from
+ * Returns: 1 on success, 0 on failure
+ * Description: Enable the terminal raw mode. This disables the bits:
+ *                  ECHO
+ *                  ICANON
+ *                  IXON.
+ *              Note: If working with stdin, `fd` should be STDIN_FILENO.
+ */
+int forge_ctrl_enable_raw_terminal(int fd, struct termios *old_termios);
+
+/**
+ * Parameter: fd          -> the file descriptor
+ * Parameter: old_termios -> the termios to copy bits from
+ * Returns: 1 on success, 0 on failure
+ * Description: Disables the terminal raw mode. The old termios
+ *              should have the same memory address as the termios
+ *              passed to `forge_ctrl_enable_raw_terminal()`.
+ */
+int forge_ctrl_disable_raw_terminal(int fd, struct termios *old_termios);
+
+/**
+ * Parameter: c -> the character to store to
+ * Returns: the type of input the user entered
+ * Description: Will read input from the user. The type of that
+ *              input will be the return type (see enum forge_ctrl_input_type)
+ *              and the actual byte data will be inside of `c`.
+ */
+forge_ctrl_input_type forge_ctrl_get_input(char *c);
+
+/**
+ * Description: Clear the terminal.
+ */
+void forge_ctrl_clear_terminal(void);
+
+/**
+ * Description: Clear the current line.
+ */
+void forge_ctrl_clear_line(void);
+
+/**
+ * Parameter: n -> the column number
+ * Description: Move the cursor to column `n`.
+ */
+void forge_ctrl_cursor_to_col(int n);
+
+#endif // FORGE_CTRL_H_INCLUDED
+
+
+#+end_src
+** =forge/viewer.h=
+#+begin_src c
+#ifndef FORGE_VIEWER_H_INCLUDED
+#define FORGE_VIEWER_H_INCLUDED
+
+#include <termios.h>
+
+typedef struct {
+        char **data;
+        size_t rows;
+        size_t cols;
+        size_t win_width;
+        size_t win_height;
+        size_t height_offset;
+        struct termios old_termios;
+
+        struct {
+                int mode;
+                char *buffer;
+                size_t len;
+                size_t cap;
+                // Last search query
+                char *last;
+        } search;
+
+        struct {
+                // array of matching row indices
+                size_t *matches;
+                size_t count;
+                size_t cap;
+                size_t current;
+        } match;
+} forge_viewer;
+
+/**
+ * Parameter: data   -> the lines to put into the viewer
+ * Parameter: data_n -> the number of lines in `data`
+ * Returns: a new forge_viewer
+ * Description: Create a new forge_viewer of `data` (copied),
+ *              `data_n` lines long. No need to free()
+ *              `data`.
+ */
+forge_viewer *forge_viewer_alloc(char **data, size_t data_n);
+
+/**
+ * Parameter: v -> the viewer
+ * Description: free() all memory used by the viewer
+ */
+void forge_viewer_free(forge_viewer *v);
+
+/**
+ * Parameter: v -> the viewer
+ * Description: Display all lines in the viewer.
+ *              This opens a `less`-like viewer.
+ */
+void forge_viewer_display(forge_viewer *v);
+
+#endif // FORGE_VIEWER_H_INCLUDED
 
 
 #+end_src
 ** =forge/conf.h=
 #+begin_src c
-#ifndef CONF_H_INCLUDED
-#define CONF_H_INCLUDED
+#ifndef FORGE_CONF_H_INCLUDED
+#define FORGE_CONF_H_INCLUDED
 
 #define FORGE_PREFERRED_MAKEFILE_JFLAGS "$(nproc)"
 
@@ -698,7 +1190,9 @@ DYN_ARRAY_TYPE(void *,   void_ptr_array);
 
 #define FORGE_PREFERRED_LIB_PREFIX "/usr/local/lib64"
 
-#endif // CONF_H_INCLUDED
+#define FORGE_EDITOR "vim"
+
+#endif // FORGE_CONF_H_INCLUDED
 
 
 #+end_src
